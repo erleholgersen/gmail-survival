@@ -134,46 +134,63 @@ rf_model <- train(
     method = 'rf'
     );
 
-probabilities <- predict(
-    rf_model,
-    test_X,
-    type = 'prob'
-    )[, 2];
-
-roc_object <- roc(test_Y, probabilities)
-
-# get AUC
-plot(roc_object);
-print( ci(roc_object) );
-
-
-new_message <- get_predictors(
-    message = "How are you?", 
-    subject = 'Hello!',
-    to = 'Other'
-    );
-
-new_message$to <- factor(
-    new_message$to,
-    levels = levels(rf_data$to)
+# save data
+output_file <- file.path(
+    'data', 
+    hedgehog::datestamp.filename( paste0('model_response_', cutoff, '_days.RData') )
     )
 
-prediction <- predict(
+save(
+    train_X,
+    test_X,
+    train_Y,
+    test_Y,
     rf_model,
-    newdata = new_message, 
-    type = 'prob'
-    );    
+    file = output_file
+    )
 
-explainer <- lime(
-    train.X, 
-    rf_model
-    );
+cat('Wrote model and training/ testing data to file', output_file, '\n')
 
-explanation <- lime::explain(
-    new_message[, -c(1:2)],
-    explainer,
-    n_labels = 1, 
-    n_features = 10
-    );
+# probabilities <- predict(
+#     rf_model,
+#     test_X,
+#     type = 'prob'
+#     )[, 2];
 
-plot_features(explanation);
+# roc_object <- roc(test_Y, probabilities)
+
+# # get AUC
+# plot(roc_object);
+# print( ci(roc_object) );
+
+
+# new_message <- get_predictors(
+#     message = "How are you?", 
+#     subject = 'Hello!',
+#     to = 'Other'
+#     );
+
+# new_message$to <- factor(
+#     new_message$to,
+#     levels = levels(rf_data$to)
+#     )
+
+# prediction <- predict(
+#     rf_model,
+#     newdata = new_message, 
+#     type = 'prob'
+#     );    
+
+# explainer <- lime(
+#     train.X, 
+#     rf_model
+#     );
+
+# explanation <- lime::explain(
+#     new_message[, -c(1:2)],
+#     explainer,
+#     n_labels = 1, 
+#     n_features = 10
+#     );
+
+# plot_features(explanation);
